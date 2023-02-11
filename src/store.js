@@ -28,6 +28,8 @@ export default createStore({
             sSelectedGroupID: null,
             sSelectedTaskID: null,
 
+            bShowSaveToast: false,
+
             sTasksFilter: "",
 
             bShowRepoWindow: true,
@@ -93,7 +95,7 @@ export default createStore({
 
             }
         },
-        
+
         fnUpdateDatabase(state, oDatabase) {
             state.oDatabase = oDatabase
         },

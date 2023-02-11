@@ -54,6 +54,7 @@
   <edit_block_window />
   <edit_group_window />
   <repo_window />
+  <saved_toast />
 
   <ul 
     ref="task_menu"
@@ -74,6 +75,7 @@ import edit_task_window from "./components/edit_task_window.vue"
 import edit_block_window from "./components/edit_block_window.vue"
 import edit_group_window from "./components/edit_group_window.vue"
 import repo_window from "./components/repo_window.vue"
+import saved_toast from "./components/saved_toast.vue"
 import loader from './components/loader.vue'
 
 import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
@@ -85,6 +87,7 @@ export default {
   components: {
     dropdown,
     loader,
+    saved_toast,
     repo_window,
     draggable_tasks_list,
     edit_task_window,
@@ -94,7 +97,7 @@ export default {
 
   computed: {
     ...mapGetters(a`aCurrentGroupBlocks oCurrentGroup fnGetBlockTasks aTasks`),
-    ...cc(`sSelectedGroupID sSelectedTaskID sMode sTasksFilter sTaskMenuX sTaskMenuY bShowTaskMenu oMenuTask`),
+    ...cc(`bShowSaveToast sSelectedGroupID sSelectedTaskID sMode sTasksFilter sTaskMenuX sTaskMenuY bShowTaskMenu oMenuTask`),
     aGroups() { return this.$store.getters.fnFilterGroups(this.sGroupsFilter) },
   },
 
@@ -129,6 +132,7 @@ export default {
 
   methods: {
     ...mapMutations(a`fnLoadRepos fnSelectGroup fnSelectTask fnOpenTaskEditWindow fnOpenBlockEditWindow fnOpenGroupEditWindow fnRemoveGroup fnRemoveBlock fnRemoveTask`),
+    ...mapActions(a`fnSaveDatabase`),
     fnGroupClickItem(oItem) {
       if (oItem.id == "add") {
         this.fnOpenGroupEditWindow({})
@@ -174,11 +178,23 @@ export default {
       }
       this.bShowTaskMenu = false
     },
+
+    fnSaveAll() {
+      this.fnSaveDatabase()
+      this.bShowSaveToast = true
+    },
   },
   created() {
     var oThis = this
 
     this.fnLoadRepos()
+
+    document.addEventListener('keydown', e => {
+      if (e.ctrlKey && e.keyCode === 83) {
+          e.preventDefault();
+          oThis.fnSaveAll()
+      }
+    });
 
     window.addEventListener('click', (e) => {
       if (this.bShowTaskMenu) {
