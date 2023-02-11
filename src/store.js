@@ -46,6 +46,12 @@ export default createStore({
             sEditBlockID: null,
             sBlockName: "",
 
+            bShowGroupEditWindow: false,
+
+            sEditGroupID: null,
+            sGroupName: "",
+            sGroupColor: "",
+
             sMode: "tasks",
         }
     },
@@ -105,6 +111,8 @@ export default createStore({
                 oItem.use_color = state.sTaskUseColor 
             } else {
                 var oItem = {}
+                state.oDatabase.tasks_last_id++
+                oItem.id = state.oDatabase.tasks_last_id
                 oItem.block_id = state.sTaskBlockID
                 oItem.name = state.sTaskName
                 oItem.short_description = state.sTaskShortDescription
@@ -135,9 +143,38 @@ export default createStore({
                 oItem.name = state.sBlockName
             } else {
                 var oItem = {}
+                state.oDatabase.tasks_blocks_last_id++
+                oItem.id = state.oDatabase.tasks_blocks_last_id
                 oItem.group_id = state.sBlockGroupID
                 oItem.name = state.sBlockName
                 state.oDatabase.tasks_blocks.push(oItem)
+            }
+        },
+        fnOpenGroupEditWindow(state, oItem) {
+            state.bShowGroupEditWindow = true;
+            
+            if (oItem.id) { 
+                state.sEditGroupID = oItem.id
+                state.sGroupName = oItem.name
+                state.sGroupColor = oItem.color
+            } else {
+                state.sEditGroupID = null
+                state.sGroupName = ""
+                state.sGroupColor = ""
+            }
+        },
+        fnSaveGroup(state) {
+            if (state.sEditGroupID!==null) {
+                var oItem = state.oDatabase.tasks_groups.find((oI) => oI.id == state.sEditGroupID)
+                oItem.name = state.sGroupName
+                oItem.color = state.sGroupColor
+            } else {
+                var oItem = {}
+                state.oDatabase.tasks_groups_last_id++
+                oItem.id = state.oDatabase.tasks_groups_last_id
+                oItem.name = state.sGroupName
+                oItem.color = "#eee"
+                state.oDatabase.tasks_groups.push(oItem)
             }
         },
     },

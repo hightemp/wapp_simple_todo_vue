@@ -51,6 +51,7 @@
   </div>
   <edit_task_window />
   <edit_block_window />
+  <edit_group_window />
 </template>
 
 <script>
@@ -59,6 +60,7 @@ import draggable_tasks_list from './components/draggable_tasks_list.vue'
 import dropdown from "./components/dropdown.vue"
 import edit_task_window from "./components/edit_task_window.vue"
 import edit_block_window from "./components/edit_block_window.vue"
+import edit_group_window from "./components/edit_group_window.vue"
 
 import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
 import { a, cc } from "./lib"
@@ -70,7 +72,8 @@ export default {
     dropdown,
     draggable_tasks_list,
     edit_task_window,
-    edit_block_window
+    edit_block_window,
+    edit_group_window,
   },
 
   computed: {
@@ -105,7 +108,21 @@ export default {
   },
 
   methods: {
-    ...mapMutations(a`fnSelectGroup fnSelectTask fnOpenTaskEditWindow fnOpenBlockEditWindow`),
+    ...mapMutations(a`fnSelectGroup fnSelectTask fnOpenTaskEditWindow fnOpenBlockEditWindow fnOpenGroupEditWindow`),
+    fnGroupClickItem(oItem) {
+      if (oItem.id == "add") {
+        this.fnOpenGroupEditWindow({})
+      }
+      if (oItem.id == "edit") {
+        if (!this.oCurrentGroup) {
+          return;
+        }
+        this.fnOpenGroupEditWindow(this.oCurrentGroup)
+      }
+      if (oItem.id == "delete") {
+
+      }
+    },
     fnClickLeftMenu(oItem) {
       if (oItem.id == "tasks") {
         this.sMode = "tasks"
@@ -117,6 +134,9 @@ export default {
       }
       if (oItem.id == "edit") {
         this.fnOpenBlockEditWindow(oBlock)
+      }
+      if (oItem.id == "delete") {
+        
       }
     },
     fnGroupOptionsClickItem(oItem, oGroup) {
