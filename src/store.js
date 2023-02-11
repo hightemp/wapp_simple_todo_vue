@@ -13,8 +13,8 @@ export const DATABASE_UPDATE_TIMEOUT = 30000
 export default createStore({
     state () {
         return {
-            oDatabase: demo_data,
-            oDefaultDatabase: {
+            oDatabase: /*demo_data,
+            oDefaultDatabase:*/ {
                 tasks_groups_last_id: 0,
                 tasks_groups: [],
                 tasks_blocks_last_id: 0,
@@ -94,6 +94,10 @@ export default createStore({
             }
         },
         
+        fnUpdateDatabase(state, oDatabase) {
+            state.oDatabase = oDatabase
+        },
+
         fnHideRepoWindow(state) {
             state.bShowRepoWindow = false
         },
