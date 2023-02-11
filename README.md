@@ -2,13 +2,11 @@
 
 Простой таск менеджер на vue аки trello с сохранением на webdav, github-api и drag&drop.
 
+[DEMO](https://hightemp.github.io/wapp_simple_todo_vue)
+
 ![](/images/2023-02-11_10-36.png)
 
 ## Перед сборкой
-
-```
-mv env.example.js env.js
-```
 
 Прописать в apache 
 
