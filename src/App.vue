@@ -1,26 +1,106 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="wrapper">
+    <div class="left-panel">
+      <button v-for="(oMenuItem, iI) in aMenu" :key="iI" class="btn" @click="fnClickLeftMenu(oMenuItem)" :title="oMenuItem.title"><i :class="'bi '+oMenuItem.icon"></i></button>
+    </div>
+    <template v-if="sMode=='tasks'">
+      <div class="groups-panel">
+        <div class="actions-panel">
+              <input type="text" class="form-control" v-model="sGroupsFilter">
+              <dropdown :items="aGroupsDropdownMenu" @clickitem="fnGroupClickItem"/>
+        </div>
+        <div class="list list-group">
+          <template v-for="(oI, iI) in aGroups" :key="iI">
+            <button type="button" :class="'list-group-item list-group-item-action '+(oI.id == sSelectedGroupID ? 'active' : '')" @click="fnSelectGroup(oI.id)" aria-current="true">
+            {{oI.name}}
+            </button>
+          </template>
+        </div>
+      </div>
+
+      <template v-if="oCurrentGroup">
+        <div class="tasks-panel-wrapper" :style="{background:oCurrentGroup.color}">
+          <div class="title-panel">
+            <div class="title">{{oCurrentGroup.name}}</div>
+            <div class="actions-panel">
+              <button class="btn"><i class="bi bi-filter"></i>Фильтр</button>
+              <dropdown :items="aGroupsOptionsDropdownMenu" @clickitem="fnGroupOptionsClickItem"/>
+            </div>
+          </div>
+          <div class="tasks-panel">
+            <template v-for="(oI, iI) in aCurrentGroupBlocks" :key="iI">
+              <div class="block-panel">
+                <div class="block-name">
+                  <div class="title">{{ oI.name }}</div>
+                  <dropdown :items="aBlockDropdownMenu" @clickitem="fnBlockClickItem"/>
+                </div>
+                <draggable_tasks_list :block_id="oI.id" />
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+    </template>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+
+import draggable_tasks_list from './components/draggable_tasks_list.vue'
+import dropdown from "./components/dropdown.vue"
+
+import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
+import { a, cc } from "./lib"
 
 export default {
   name: 'App',
+
   components: {
-    HelloWorld
+    dropdown,
+    draggable_tasks_list
+  },
+
+  computed: {
+    ...mapGetters(a`aCurrentGroupBlocks oCurrentGroup fnGetBlockTasks aTasks`),
+    ...cc(`sSelectedGroupID sSelectedTaskID sMode`),
+    aGroups() { return this.$store.getters.fnFilterGroups(this.sGroupsFilter) },
+  },
+
+  data() {
+    return {
+      aMenu: [
+        { id: "repo-window", title: "Выбрать репозиторий", icon: "bi-person-fill" },
+        { id: "tasks", title: "Задачи", icon: "bi-layout-three-columns" }
+      ],
+
+      sGroupsFilter: "",
+
+      aGroupsDropdownMenu: [
+        { id:"add", title:'<i class="bi bi-plus-lg"></i> Добавить' },
+        { id:"edit", title:'<i class="bi bi-pencil"></i> Редактировать' },
+        { id:"delete", title:'<i class="bi bi-trash"></i> Удалить' },
+      ],
+      aBlockDropdownMenu: [
+        { id:"add-task", title:'<i class="bi bi-plus-lg"></i> Добавить задачу' },
+        { id:"edit", title:'<i class="bi bi-pencil"></i> Редактировать' },
+        { id:"delete", title:'<i class="bi bi-trash"></i> Удалить' },
+      ],
+      aGroupsOptionsDropdownMenu: [
+
+      ]
+    }
+  },
+
+  methods: {
+    ...mapMutations(a`fnSelectGroup fnSelectTask`),
+    fnClickLeftMenu(oItem) {
+      if (oItem.id == "tasks") {
+        this.sMode = "tasks"
+      }
+    },
+    fnGroupOptionsClickItem(oItem) {
+
+    }
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
