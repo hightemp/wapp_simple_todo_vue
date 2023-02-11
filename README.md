@@ -1,24 +1,6 @@
 # wapp_simple_todo_vue
 
-## Project setup
-```
-npm install
-```
+Простой таск менеджер на vue аки trello с сохранением на webdav, github-api и drag&drop.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+![](/images/2023-02-11_10-36.png)
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
