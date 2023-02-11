@@ -23,6 +23,9 @@
           <div class="title-panel">
             <div class="title">{{oCurrentGroup.name}}</div>
             <div class="actions-panel">
+              <div class="task-filter">
+                <input type="text" class="form-control" v-model="sTasksFilter">
+              </div>
               <button class="btn"><i class="bi bi-filter"></i>Фильтр</button>
               <dropdown :items="aGroupsOptionsDropdownMenu" @clickitem="fnGroupOptionsClickItem"/>
             </div>
@@ -32,9 +35,9 @@
               <div class="block-panel">
                 <div class="block-name">
                   <div class="title">{{ oI.name }}</div>
-                  <dropdown :items="aBlockDropdownMenu" @clickitem="fnBlockClickItem"/>
+                  <dropdown :items="aBlockDropdownMenu" @clickitem="(oE) => fnBlockClickItem(oE, oI)"/>
                 </div>
-                <draggable_tasks_list :block_id="oI.id" />
+                <draggable_tasks_list :block_id="oI.id" @clickedititem="fnClickEditItem"/>
               </div>
             </template>
           </div>
@@ -42,12 +45,14 @@
       </template>
     </template>
   </div>
+  <edit_task_window />
 </template>
 
 <script>
 
 import draggable_tasks_list from './components/draggable_tasks_list.vue'
 import dropdown from "./components/dropdown.vue"
+import edit_task_window from "./components/edit_task_window.vue"
 
 import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
 import { a, cc } from "./lib"
@@ -57,12 +62,13 @@ export default {
 
   components: {
     dropdown,
-    draggable_tasks_list
+    draggable_tasks_list,
+    edit_task_window
   },
 
   computed: {
     ...mapGetters(a`aCurrentGroupBlocks oCurrentGroup fnGetBlockTasks aTasks`),
-    ...cc(`sSelectedGroupID sSelectedTaskID sMode`),
+    ...cc(`sSelectedGroupID sSelectedTaskID sMode sTasksFilter`),
     aGroups() { return this.$store.getters.fnFilterGroups(this.sGroupsFilter) },
   },
 
@@ -92,14 +98,23 @@ export default {
   },
 
   methods: {
-    ...mapMutations(a`fnSelectGroup fnSelectTask`),
+    ...mapMutations(a`fnSelectGroup fnSelectTask fnOpenTaskEditWindow`),
     fnClickLeftMenu(oItem) {
       if (oItem.id == "tasks") {
         this.sMode = "tasks"
       }
     },
+    fnBlockClickItem(oItem, oBlock) {
+      if (oItem.id == "add-task") {
+        this.fnOpenTaskEditWindow({ block_id: oBlock.id })
+      }
+    },
     fnGroupOptionsClickItem(oItem) {
-
+      if (oItem.id == "tasks") {
+      }
+    },
+    fnClickEditItem(oItem) {
+      this.fnOpenTaskEditWindow(oItem)
     }
   }
 }

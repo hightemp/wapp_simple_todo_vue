@@ -1,14 +1,14 @@
 <template>
     <div class="block-tasks list list-group">
-        <draggable v-model="aTasks" item-key="id" group="people" ghost-class="ghost" @start="drag=true" @end="drag=false">
+        <draggable v-model="aTasks" item-key="id" group="people" ghost-class="ghost" @start="drag=true" @end="drag=false" :sort="true">
             <template #item="{element}">
                 <div 
                     type="button" :class="'list-card '+(element.id == sSelectedTaskID ? 'active' : '')" aria-current="true">
                     <div class="actions-panel">
-                    <div class="btn"><i class="bi bi-pencil"></i></div>
+                        <div class="btn" @click="fnClickItem(element)"><i class="bi bi-pencil"></i></div>
                     </div>
 
-                    <div v-if="element.color" class="task-color" :style="{background:element.color}"></div>
+                    <div v-if="element.use_color" class="task-color" :style="{background:element.color}"></div>
                     <div class="title">{{element.name}}</div>
                     <div class="description">{{element.short_description}}</div>
                 </div>
@@ -27,6 +27,7 @@ export default {
         draggable,
     },
     
+    emits: ['clickedititem'],
     props: ['block_id'],
 
     computed: {
@@ -41,6 +42,12 @@ export default {
     data() {
         return {
             drag: false
+        }
+    },
+
+    methods: {
+        fnClickItem(oItem) {
+            this.$emit('clickedititem', oItem)
         }
     }
 }

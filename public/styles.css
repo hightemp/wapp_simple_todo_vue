@@ -180,3 +180,7 @@ body, html {
     background: rgba(180,180,180,0.2);
     border-radius: 3px !important;
 }
+
+.modal.show {
+    display: block;
+}

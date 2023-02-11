@@ -25,8 +25,21 @@ export default createStore({
                 archived_tasks: [],
             },
 
+            bShowTaskEditWindow: false,
+
             sSelectedGroupID: null,
             sSelectedTaskID: null,
+
+            sTasksFilter: "",
+
+            sEditTaskID: null,
+            sTaskBlockID: "",
+            sTaskBlockName: "",
+            sTaskName: "",
+            sTaskShortDescription: "",
+            sTaskFullDescription: "",
+            sTaskColor: "",
+            sTaskUseColor: "",
 
             sMode: "tasks",
         }
@@ -47,10 +60,53 @@ export default createStore({
         },
         fnUpdateTasksListForBlock(state, { sBlockID, aList }) {
             console.log({ sBlockID, aList, tasks: state.oDatabase.tasks });
+            state.oDatabase.tasks = state.oDatabase.tasks.filter((oI) => !~aList.findIndex((oFI) => oFI.id == oI.id ))
             for (var oI of aList) {
-                // var oE = state.oDatabase.tasks.find((oIT) => oIT.id == oI.id)
-                // console.log({})
                 oI.block_id = sBlockID
+            }
+            state.oDatabase.tasks = state.oDatabase.tasks.concat(aList)
+        },
+        fnOpenTaskEditWindow(state, oItem) {
+            state.bShowTaskEditWindow = true;
+            
+            var oB = state.oDatabase.tasks_blocks.find((oI) => oI.id == oItem.block_id)
+            state.sTaskBlockName = oB.name
+            state.sTaskBlockID = oB.id
+
+            if (oItem.id) { 
+                state.sEditTaskID = oItem.id
+                state.sTaskName = oItem.name
+                state.sTaskShortDescription = oItem.short_description
+                state.sTaskFullDescription = oItem.description
+                state.sTaskColor = oItem.color
+                state.sTaskUseColor = oItem.use_color
+            } else {
+                state.sEditTaskID = null
+                state.sTaskName = ""
+                state.sTaskShortDescription = ""
+                state.sTaskFullDescription = ""
+                state.sTaskColor = ""
+                state.sTaskUseColor = false
+            }
+        },
+        fnSaveTask(state) {
+            if (state.sEditTaskID!==null) {
+                var oItem = state.oDatabase.tasks.find((oI) => oI.id == state.sEditTaskID)
+                oItem.block_id = state.sTaskBlockID
+                oItem.name = state.sTaskName
+                oItem.short_description = state.sTaskShortDescription
+                oItem.description = state.sTaskFullDescription
+                oItem.color = state.sTaskColor
+                oItem.use_color = state.sTaskUseColor 
+            } else {
+                var oItem = {}
+                oItem.block_id = state.sTaskBlockID
+                oItem.name = state.sTaskName
+                oItem.short_description = state.sTaskShortDescription
+                oItem.description = state.sTaskFullDescription
+                oItem.color = state.sTaskColor
+                oItem.use_color = state.sTaskUseColor 
+                state.oDatabase.tasks.push(oItem)
             }
         }
     },
@@ -79,7 +135,11 @@ export default createStore({
         },
 
         fnGetBlockTasks: (state) => (sBlockID) => {
-            return state.oDatabase.tasks.filter((oI) => oI.block_id == sBlockID);
+            return state.oDatabase.tasks.filter((oI) => oI.block_id == sBlockID && ~oI.name.indexOf(state.sTasksFilter));
+        },
+
+        fnGetBlock: (state) => (sBlockID) => {
+            return state.oDatabase.tasks_blocks.filter((oI) => oI.block_id == sBlockID);
         }
     }
 })
