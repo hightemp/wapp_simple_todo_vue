@@ -10,7 +10,7 @@
             <i class="bi bi-three-dots-vertical"></i>
         </a>
 
-        <ul :class="'dropdown-menu '+(bOpened ? 'show' : '')">
+        <ul :class="'dropdown-menu '+(cls??'')+' '+(bOpened ? 'show' : '')">
             <li v-for="oI in aItems" :key="oI.id"><a class="dropdown-item" href="#" @click="fnOnItemClick(oI)" v-html="oI.title"></a></li>
         </ul>
     </div>
@@ -18,7 +18,7 @@
 
 <script>
 export default {
-    props: ['items'],
+    props: ['items', 'cls'],
 
     emits: ['clickitem'],
 

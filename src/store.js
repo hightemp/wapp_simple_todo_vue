@@ -25,12 +25,12 @@ export default createStore({
                 archived_tasks: [],
             },
 
-            bShowTaskEditWindow: false,
-
             sSelectedGroupID: null,
             sSelectedTaskID: null,
 
             sTasksFilter: "",
+
+            bShowTaskEditWindow: false,
 
             sEditTaskID: null,
             sTaskBlockID: "",
@@ -40,6 +40,11 @@ export default createStore({
             sTaskFullDescription: "",
             sTaskColor: "",
             sTaskUseColor: "",
+
+            bShowBlockEditWindow: false,
+
+            sEditBlockID: null,
+            sBlockName: "",
 
             sMode: "tasks",
         }
@@ -108,7 +113,33 @@ export default createStore({
                 oItem.use_color = state.sTaskUseColor 
                 state.oDatabase.tasks.push(oItem)
             }
-        }
+        },
+        fnOpenBlockEditWindow(state, oItem) {
+            state.bShowBlockEditWindow = true;
+            
+            var oB = state.oDatabase.tasks_groups.find((oI) => oI.id == oItem.group_id)
+            state.sBlockGroupID = oB.id
+
+            if (oItem.id) { 
+                state.sEditBlockID = oItem.id
+                state.sBlockName = oItem.name
+            } else {
+                state.sEditBlockID = null
+                state.sBlockName = ""
+            }
+        },
+        fnSaveBlock(state) {
+            if (state.sEditBlockID!==null) {
+                var oItem = state.oDatabase.tasks_blocks.find((oI) => oI.id == state.sEditBlockID)
+                oItem.group_id = state.sBlockGroupID
+                oItem.name = state.sBlockName
+            } else {
+                var oItem = {}
+                oItem.group_id = state.sBlockGroupID
+                oItem.name = state.sBlockName
+                state.oDatabase.tasks_blocks.push(oItem)
+            }
+        },
     },
     actions: {
 

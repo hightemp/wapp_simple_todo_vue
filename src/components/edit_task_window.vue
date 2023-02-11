@@ -45,8 +45,6 @@ import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
 import { a, cc } from "../lib"
 
 export default {
-    name: "EditArticle",
-
     props: {},
 
     computed: {
