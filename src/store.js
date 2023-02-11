@@ -30,6 +30,11 @@ export default createStore({
 
             sTasksFilter: "",
 
+            bShowRepoWindow: true,
+
+            aReposList: [],
+            iSelectedRepoIndex: null,
+
             bShowTaskEditWindow: false,
 
             sEditTaskID: null,
@@ -62,6 +67,46 @@ export default createStore({
         }
     },
     mutations: {
+        fnReposRemove(state, iIndex) {
+            state.aReposList.splice(iIndex, 1)
+            localStorage.setItem('aReposList', JSON.stringify(state.aReposList))
+        },
+        fnReposSelect(state, iIndex) {
+            state.iSelectedRepoIndex = iIndex
+        },
+        fnReposClean(state) {
+            state.aReposList = []
+            localStorage.setItem('aReposList', JSON.stringify(state.aReposList))
+        },
+        fnReposUpdate(state, { iIndex, oObj }) {
+            if (iIndex==-1) {
+                state.aReposList.push(oObj)
+            } else {
+                state.aReposList.splice(iIndex, 1, oObj)
+            }
+            localStorage.setItem('aReposList', JSON.stringify(state.aReposList))
+        },
+        fnLoadRepos(state) {
+            try { 
+                state.aReposList = JSON.parse(localStorage.getItem('aReposList') || '[]')
+            } catch(_) {
+
+            }
+        },
+        
+        fnHideRepoWindow(state) {
+            state.bShowRepoWindow = false
+        },
+        fnShowRepoWindow(state) {
+            state.bShowRepoWindow = true
+        },
+        fnShowLoader(state) {
+            state.bShowLoader = true
+        },
+        fnHideLoader(state) {
+            state.bShowLoader = false
+        },
+
         fnUpdateVar(state, { sName, sV }) {
             state[sName] = sV
         },
@@ -197,9 +242,43 @@ export default createStore({
         }
     },
     actions: {
-
+        fnPrepareRepo({ commit, state, dispatch, getters }) {
+            commit('fnHideRepoWindow')
+            FileSystemDriver.fnInit(getters.oCurrentRepo)
+            dispatch('fnLoadDatabase')
+        },
+        fnSaveDatabase({ commit, state }) {
+            return FileSystemDriver.fnWriteFileJSON(DATABASE_PATH, state.oDatabase)
+        },
+        fnLoadDatabase({ commit, state }) {
+            commit('fnShowLoader')
+            FileSystemDriver
+                .fnReadFileJSON(DATABASE_PATH)
+                .then((mData) => { 
+                    commit('fnUpdateDatabase', mData)
+                    // commit('fnUpdateDatabase', mData=demo_database)
+                    commit('fnHideLoader')
+                })
+                .catch((oE) => {
+                    if ((oE+"").match(/Not Found/)) {
+                        FileSystemDriver.fnWriteFileJSON(DATABASE_PATH, state.oDatabase)
+                            .then(() => {
+                                FileSystemDriver
+                                    .fnReadFileJSON(DATABASE_PATH)
+                                    .then((mData) => { 
+                                        commit('fnUpdateDatabase', mData)
+                                        commit('fnHideLoader')
+                                    })
+                            })
+                    }
+                })
+        },
     },
     getters: {
+        oCurrentRepo(state) {
+            return state.aReposList[state.iSelectedRepoIndex]
+        },
+
         fnFilterGroups: (state) => (sFilter) => {
             return state.oDatabase.tasks_groups.filter((oI) => ~oI.name.indexOf(sFilter))
         },

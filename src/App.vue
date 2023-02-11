@@ -53,6 +53,7 @@
   <edit_task_window />
   <edit_block_window />
   <edit_group_window />
+  <repo_window />
 
   <ul 
     ref="task_menu"
@@ -61,6 +62,8 @@
   >
     <li v-for="oI in aTasksDropdownMenu" :key="oI.id"><a class="dropdown-item" href="#" @click="fnTaskClickItem(oI)" v-html="oI.title"></a></li>
   </ul>
+
+  <loader/>
 </template>
 
 <script>
@@ -70,6 +73,8 @@ import dropdown from "./components/dropdown.vue"
 import edit_task_window from "./components/edit_task_window.vue"
 import edit_block_window from "./components/edit_block_window.vue"
 import edit_group_window from "./components/edit_group_window.vue"
+import repo_window from "./components/repo_window.vue"
+import loader from './components/loader.vue'
 
 import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
 import { a, cc } from "./lib"
@@ -79,6 +84,8 @@ export default {
 
   components: {
     dropdown,
+    loader,
+    repo_window,
     draggable_tasks_list,
     edit_task_window,
     edit_block_window,
@@ -121,7 +128,7 @@ export default {
   },
 
   methods: {
-    ...mapMutations(a`fnSelectGroup fnSelectTask fnOpenTaskEditWindow fnOpenBlockEditWindow fnOpenGroupEditWindow fnRemoveGroup fnRemoveBlock fnRemoveTask`),
+    ...mapMutations(a`fnLoadRepos fnSelectGroup fnSelectTask fnOpenTaskEditWindow fnOpenBlockEditWindow fnOpenGroupEditWindow fnRemoveGroup fnRemoveBlock fnRemoveTask`),
     fnGroupClickItem(oItem) {
       if (oItem.id == "add") {
         this.fnOpenGroupEditWindow({})
@@ -170,6 +177,9 @@ export default {
   },
   created() {
     var oThis = this
+
+    this.fnLoadRepos()
+
     window.addEventListener('click', (e) => {
       if (this.bShowTaskMenu) {
         if (oThis.$refs.task_menu.contains(e.target)) {

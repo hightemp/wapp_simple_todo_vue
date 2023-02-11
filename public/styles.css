@@ -196,3 +196,62 @@ body, html {
 .task-menu {
     position: absolute;
 }
+
+
+.list-repo-item {
+    display: grid;
+    grid-template-columns: 1fr 100px;
+    padding: 5px;
+}
+
+.modal-ask-api_list_buttons {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 5px;
+    padding: 0px 0px 5px 0px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-ask-api_list_buttons > div {
+    gap: 5px;
+    display: flex;
+}
+
+#modal-ask-api-key .form-label {
+    width: 100%;
+    text-align: left;
+}
+
+.list-repo-item:nth-child(2n) {
+    background: rgba(0,0,0,0.1);
+}
+
+.list-repo-item:hover {
+    background: rgba(0,0,0,0.2);
+}
+
+.list-repo-item_desc * {
+    text-align: left;
+    word-break: break-all;
+}
+
+.list-repo-item.active {
+    background: blue;
+    color: white;
+}
+
+.list-repo-item_title {
+    display: flex;
+}
+
+.list-repo-item_type {
+    background: green;
+    color: white;
+    padding: 5px;
+}
+
+.list-repo-item_name {
+    background: grey;
+    color: white;
+    padding: 5px;
+}
