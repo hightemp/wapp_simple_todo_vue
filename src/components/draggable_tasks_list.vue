@@ -4,13 +4,15 @@
             <template #item="{element}">
                 <div 
                     type="button" :class="'list-card '+(element.id == sSelectedTaskID ? 'active' : '')" aria-current="true">
-                    <div class="actions-panel">
-                        <div class="btn" @click="fnClickItem(element)"><i class="bi bi-pencil"></i></div>
-                    </div>
 
                     <div v-if="element.use_color" class="task-color" :style="{background:element.color}"></div>
                     <div class="title">{{element.name}}</div>
                     <div class="description">{{element.short_description}}</div>
+
+                    <div class="actions-panel">
+                        <div class="btn" @click="fnClickItem($event, element)"><i class="bi bi-pencil"></i></div>
+                        <!-- <dropdown :items="aTasksDropdownMenu" @clickitem="(oE) => fnClickItem(oE, element)" cls="drop-menu-left"/> -->
+                    </div>
                 </div>
             </template>
         </draggable>
@@ -20,18 +22,21 @@
 <script>
 
 import draggable from 'vuedraggable'
+import dropdown from "../components/dropdown.vue"
+import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
 import { a, cc } from "../lib"
 
 export default {
     components: {
         draggable,
+        dropdown
     },
     
     emits: ['clickedititem'],
     props: ['block_id'],
 
     computed: {
-        ...cc(`sSelectedTaskID`),
+        ...cc(`sSelectedTaskID bShowTaskMenu sTaskMenuX sTaskMenuY oMenuTask`),
         aTasks: {
             get() { return this.$store.getters.fnGetBlockTasks(this.block_id) },
             // get() { return this.$store.state.oDatabase.tasks.filter((oI) => oI.block_id == this.block_id) },
@@ -41,13 +46,19 @@ export default {
 
     data() {
         return {
-            drag: false
+            drag: false,
         }
     },
 
     methods: {
-        fnClickItem(oItem) {
-            this.$emit('clickedititem', oItem)
+        ...mapMutations(a`fnOpenTaskEditWindow fmRemoveTask`),
+        fnClickItem(oEvent, oItem) {
+            var oB = oEvent.target.getBoundingClientRect()
+            this.sTaskMenuX = oB.x
+            this.sTaskMenuY = oB.y+oB.height
+            this.oMenuTask = oItem
+            this.bShowTaskMenu = true
+            oEvent.stopPropagation()
         }
     }
 }

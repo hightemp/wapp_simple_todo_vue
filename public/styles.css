@@ -152,16 +152,14 @@ body, html {
 
 .block-tasks .title {
     font-weight: bold;
+    z-index: -11;
 }
 
 .block-tasks .description {
     max-height: 100px;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.block-tasks .actions-panel {
-    float: right;
+    z-index: -11;
 }
 
 .block-tasks .actions-panel {
@@ -186,5 +184,15 @@ body, html {
 }
 
 .drop-menu-left {
+    position: absolute !important;
     margin-left: -100px !important;
+    z-index: 100;
+}
+
+.dropdown-menu {
+    z-index: 100;
+}
+
+.task-menu {
+    position: absolute;
 }

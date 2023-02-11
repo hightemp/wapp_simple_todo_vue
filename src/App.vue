@@ -38,10 +38,10 @@
                 <div class="block-name">
                   <div class="title">{{ oI.name }}</div>
                   <!-- NOTE: Блоки -->
-                  <dropdown :items="aBlockDropdownMenu" @clickitem="(oE) => fnBlockClickItem(oE, oI)"/>
+                  <dropdown :items="aBlockDropdownMenu" cls="drop-menu-left" @clickitem="(oE) => fnBlockClickItem(oE, oI)"/>
                 </div>
                 <!-- NOTE: Задачи -->
-                <draggable_tasks_list :block_id="oI.id" @clickedititem="fnClickEditItem"/>
+                <draggable_tasks_list :block_id="oI.id"/>
               </div>
             </template>
           </div>
@@ -49,9 +49,18 @@
       </template>
     </template>
   </div>
+
   <edit_task_window />
   <edit_block_window />
   <edit_group_window />
+
+  <ul 
+    ref="task_menu"
+    :class="'dropdown-menu task-menu '+(bShowTaskMenu ? 'show' : '')" 
+    :style="{ top: sTaskMenuY+'px', left: sTaskMenuX+'px' }"
+  >
+    <li v-for="oI in aTasksDropdownMenu" :key="oI.id"><a class="dropdown-item" href="#" @click="fnTaskClickItem(oI)" v-html="oI.title"></a></li>
+  </ul>
 </template>
 
 <script>
@@ -78,7 +87,7 @@ export default {
 
   computed: {
     ...mapGetters(a`aCurrentGroupBlocks oCurrentGroup fnGetBlockTasks aTasks`),
-    ...cc(`sSelectedGroupID sSelectedTaskID sMode sTasksFilter`),
+    ...cc(`sSelectedGroupID sSelectedTaskID sMode sTasksFilter sTaskMenuX sTaskMenuY bShowTaskMenu oMenuTask`),
     aGroups() { return this.$store.getters.fnFilterGroups(this.sGroupsFilter) },
   },
 
@@ -103,12 +112,16 @@ export default {
       ],
       aGroupsOptionsDropdownMenu: [
         { id:"add", title:'<i class="bi bi-plus-lg"></i> Добавить блок' },
+      ],
+      aTasksDropdownMenu: [
+        { id:"edit", title:'<i class="bi bi-pencil"></i> Редактировать' },
+        { id:"delete", title:'<i class="bi bi-trash"></i> Удалить' },
       ]
     }
   },
 
   methods: {
-    ...mapMutations(a`fnSelectGroup fnSelectTask fnOpenTaskEditWindow fnOpenBlockEditWindow fnOpenGroupEditWindow`),
+    ...mapMutations(a`fnSelectGroup fnSelectTask fnOpenTaskEditWindow fnOpenBlockEditWindow fnOpenGroupEditWindow fnRemoveGroup fnRemoveBlock fnRemoveTask`),
     fnGroupClickItem(oItem) {
       if (oItem.id == "add") {
         this.fnOpenGroupEditWindow({})
@@ -120,7 +133,7 @@ export default {
         this.fnOpenGroupEditWindow(this.oCurrentGroup)
       }
       if (oItem.id == "delete") {
-
+        this.fnRemoveGroup(this.oCurrentGroup.id)
       }
     },
     fnClickLeftMenu(oItem) {
@@ -136,7 +149,7 @@ export default {
         this.fnOpenBlockEditWindow(oBlock)
       }
       if (oItem.id == "delete") {
-        
+        this.fnRemoveBlock(oBlock.id)
       }
     },
     fnGroupOptionsClickItem(oItem, oGroup) {
@@ -144,9 +157,28 @@ export default {
         this.fnOpenBlockEditWindow({ group_id: this.oCurrentGroup.id })
       }
     },
-    fnClickEditItem(oItem) {
-      this.fnOpenTaskEditWindow(oItem)
-    }
+    fnTaskClickItem(oE) {
+      if (oE.id == "edit") {
+          // this.$emit('clickedititem', oItem)
+          this.fnOpenTaskEditWindow(this.oMenuTask)
+      }
+      if (oE.id == "delete") {
+          this.fnRemoveTask(this.oMenuTask.id)
+      }
+      this.bShowTaskMenu = false
+    },
+  },
+  created() {
+    var oThis = this
+    window.addEventListener('click', (e) => {
+      if (this.bShowTaskMenu) {
+        if (oThis.$refs.task_menu.contains(e.target)) {
+
+        } else {
+          this.bShowTaskMenu = false
+        }
+      }
+    })        
   }
 }
 </script>

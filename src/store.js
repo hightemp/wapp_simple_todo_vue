@@ -52,6 +52,12 @@ export default createStore({
             sGroupName: "",
             sGroupColor: "",
 
+            bShowTaskMenu: false,
+            sTaskMenuX: "",
+            sTaskMenuY: "",
+
+            oMenuTask: null,
+
             sMode: "tasks",
         }
     },
@@ -177,6 +183,18 @@ export default createStore({
                 state.oDatabase.tasks_groups.push(oItem)
             }
         },
+        fnRemoveGroup(state, sID) {
+            var iI = state.oDatabase.tasks_groups.findIndex((oI) => oI.id == sID)
+            state.oDatabase.tasks_groups.splice(iI, 1)
+        },
+        fnRemoveBlock(state, sID) {
+            var iI = state.oDatabase.tasks_blocks.findIndex((oI) => oI.id == sID)
+            state.oDatabase.tasks_blocks.splice(iI, 1)
+        },
+        fnRemoveTask(state, sID) {
+            var iI = state.oDatabase.tasks.findIndex((oI) => oI.id == sID)
+            state.oDatabase.tasks.splice(iI, 1)
+        }
     },
     actions: {
 
