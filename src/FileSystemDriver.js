@@ -142,6 +142,7 @@ export class FileSystemDriver {
     {
         return new Promise(async (fnResolv, fnReject) => {
             var oR = FileSystemDriver.oRepoItem
+            sFilePath = sFilePath.replace(/^\/+/, '')
             return FileSystemDriver.octokit.rest.repos.createOrUpdateFileContents({
                 owner: oR.sLogin,
                 repo: oR.sRepo,
