@@ -255,6 +255,12 @@ export default createStore({
         },
         fnSaveDatabase({ commit, state }) {
             return FileSystemDriver.fnWriteFileJSON(DATABASE_PATH, state.oDatabase)
+                .catch(() => {
+                    FileSystemDriver.fnReadFile(DATABASE_PATH)
+                        .then(() => {
+                            return FileSystemDriver.fnWriteFileJSON(DATABASE_PATH, state.oDatabase)
+                        })
+                })
         },
         fnLoadDatabase({ commit, state }) {
             commit('fnShowLoader')

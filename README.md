@@ -1,5 +1,7 @@
 # wapp_simple_todo_vue
 
+![](https://asdertasd.site/counter/wapp_simple_todo_vue)
+
 Простой таск менеджер на vue аки trello с сохранением на webdav, github-api и drag&drop.
 
 [DEMO](https://hightemp.github.io/wapp_simple_todo_vue)

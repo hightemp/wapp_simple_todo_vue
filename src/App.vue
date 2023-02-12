@@ -97,7 +97,7 @@ export default {
 
   computed: {
     ...mapGetters(a`aCurrentGroupBlocks oCurrentGroup fnGetBlockTasks aTasks`),
-    ...cc(`bShowSaveToast sSelectedGroupID sSelectedTaskID sMode sTasksFilter sTaskMenuX sTaskMenuY bShowTaskMenu oMenuTask`),
+    ...cc(`bShowSaveToast sSelectedGroupID sSelectedTaskID sMode sTasksFilter sTaskMenuX sTaskMenuY bShowTaskMenu oMenuTask bShowRepoWindow`),
     aGroups() { return this.$store.getters.fnFilterGroups(this.sGroupsFilter) },
   },
 
@@ -148,6 +148,9 @@ export default {
       }
     },
     fnClickLeftMenu(oItem) {
+      if (oItem.id == "repo-window") {
+        this.bShowRepoWindow = true
+      }
       if (oItem.id == "tasks") {
         this.sMode = "tasks"
       }

@@ -69,7 +69,7 @@ export class FileSystemDriver {
 
     static fnWriteFileJSON(sFilePath, mData)
     {
-        return this.fnWriteFile(sFilePath, JSON.stringify(mData))
+        return this.fnWriteFile(sFilePath, JSON.stringify(mData, null, 4))
     }
 
     static fnWriteFile(sFilePath, sData)
@@ -131,6 +131,7 @@ export class FileSystemDriver {
             }).then(({ data }) => {
                 var sData = decode(data.content)
                 FileSystemDriver.oSHA[sFilePath] = data.sha
+                console.log(FileSystemDriver.oSHA)
                 fnResolv({sData, sSHA: data.sha})
             }).catch((oE) => {
                 console.error(oE)
