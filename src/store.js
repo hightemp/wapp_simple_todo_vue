@@ -230,7 +230,7 @@ export default createStore({
                 state.oDatabase.tasks_groups_last_id++
                 oItem.id = state.oDatabase.tasks_groups_last_id
                 oItem.name = state.sGroupName
-                oItem.color = "#eee"
+                oItem.color = state.sGroupColor
                 state.oDatabase.tasks_groups.push(oItem)
             }
         },

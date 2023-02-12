@@ -122,6 +122,7 @@ export class FileSystemDriver {
     {
         return new Promise(async (fnResolv, fnReject) => {
             var oR = FileSystemDriver.oRepoItem
+            console.log('read', oR)
             sFilePath = sFilePath.replace(/^\/+/, '')
             return FileSystemDriver.octokit.rest.repos.getContent({
                 owner: oR.login,
@@ -142,10 +143,11 @@ export class FileSystemDriver {
     {
         return new Promise(async (fnResolv, fnReject) => {
             var oR = FileSystemDriver.oRepoItem
+            console.log('write', oR)
             sFilePath = sFilePath.replace(/^\/+/, '')
             return FileSystemDriver.octokit.rest.repos.createOrUpdateFileContents({
-                owner: oR.sLogin,
-                repo: oR.sRepo,
+                owner: oR.login,
+                repo: oR.repo,
                 path: sFilePath,
                 sha: sSHA ? sSHA : FileSystemDriver.oSHA[sFilePath],
                 message: FileSystemDriver.fnGetUpdateMessage(),
