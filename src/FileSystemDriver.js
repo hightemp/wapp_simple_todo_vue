@@ -146,7 +146,7 @@ export class FileSystemDriver {
                 owner: oR.sLogin,
                 repo: oR.sRepo,
                 path: sFilePath,
-                sha: sSHA ? sSHA : oSHA[sFilePath],
+                sha: sSHA ? sSHA : FileSystemDriver.oSHA[sFilePath],
                 message: FileSystemDriver.fnGetUpdateMessage(),
                 content: encode(sData)
             })
