@@ -34,6 +34,9 @@ export default createStore({
 
             bShowRepoWindow: true,
 
+            aDefaultRepoList: [
+                { type:"localstorage", name: "Локальное хранилище" }
+            ],
             aReposList: [],
             iSelectedRepoIndex: null,
 
@@ -70,7 +73,7 @@ export default createStore({
     },
     mutations: {
         fnReposRemove(state, iIndex) {
-            state.aReposList.splice(iIndex, 1)
+            state.aReposList.splice(iIndex-state.aDefaultRepoList.length, 1)
             localStorage.setItem('aReposList', JSON.stringify(state.aReposList))
         },
         fnReposSelect(state, iIndex) {
@@ -84,7 +87,7 @@ export default createStore({
             if (iIndex==-1) {
                 state.aReposList.push(oObj)
             } else {
-                state.aReposList.splice(iIndex, 1, oObj)
+                state.aReposList.splice(iIndex-state.aDefaultRepoList.length, 1, oObj)
             }
             localStorage.setItem('aReposList', JSON.stringify(state.aReposList))
         },
@@ -272,7 +275,8 @@ export default createStore({
                     commit('fnHideLoader')
                 })
                 .catch((oE) => {
-                    if ((oE+"").match(/Not Found/)) {
+                    if ((oE+"").match(/Cannot destructure property/)
+                        || (oE+"").match(/Not Found/)) {
                         FileSystemDriver.fnWriteFileJSON(DATABASE_PATH, state.oDatabase)
                             .then(() => {
                                 FileSystemDriver
@@ -287,8 +291,11 @@ export default createStore({
         },
     },
     getters: {
-        oCurrentRepo(state) {
-            return state.aReposList[state.iSelectedRepoIndex]
+        aReposList(state) {
+            return state.aDefaultRepoList.concat(state.aReposList)
+        },
+        oCurrentRepo(state, getters) {
+            return getters.aReposList[state.iSelectedRepoIndex]
         },
 
         fnFilterGroups: (state) => (sFilter) => {
