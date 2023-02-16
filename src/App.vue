@@ -2,6 +2,9 @@
   <div class="wrapper">
     <div class="left-panel">
       <button v-for="(oMenuItem, iI) in aMenu" :key="iI" class="btn" @click="fnClickLeftMenu(oMenuItem)" :title="oMenuItem.title"><i :class="'bi '+oMenuItem.icon"></i></button>
+      <hr />
+      <button class="btn" title="Экспортировать" @click="fnExport"><i class="bi bi-box-arrow-down"></i></button>
+      <button class="btn btn-import" title="Импортировать"><i class="bi bi-box-arrow-in-up"></i><label><input type="file" ref="file_selector" @change="fnFileImportChange" /></label></button>
     </div>
     <template v-if="sMode=='tasks'">
       <div class="groups-panel">
@@ -132,7 +135,7 @@ export default {
 
   methods: {
     ...mapMutations(a`fnLoadRepos fnSelectGroup fnSelectTask fnOpenTaskEditWindow fnOpenBlockEditWindow fnOpenGroupEditWindow fnRemoveGroup fnRemoveBlock fnRemoveTask`),
-    ...mapActions(a`fnSaveDatabase`),
+    ...mapActions(a`fnSaveDatabase fnImportDatabase fnExportDatabase`),
     fnGroupClickItem(oItem) {
       if (oItem.id == "add") {
         this.fnOpenGroupEditWindow({})
@@ -185,6 +188,28 @@ export default {
     fnSaveAll() {
       this.fnSaveDatabase()
       this.bShowSaveToast = true
+    },
+
+    fnExport() {
+      this.fnExportDatabase()
+    },
+    fnImport() {
+      let oFile = this.$refs.file_selector.files[0];
+      let reader = new FileReader();
+      var oThis = this
+
+      reader.readAsText(oFile);
+
+      reader.onload = function() {
+        oThis.fnImportDatabase(reader.result)
+      };
+
+      reader.onerror = function() {
+        console.error(reader.error);
+      };
+    },
+    fnFileImportChange() {
+      this.fnImport()
     },
   },
   created() {

@@ -255,3 +255,21 @@ body, html {
     color: white;
     padding: 5px;
 }
+
+
+.btn-import {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 30px;
+}
+.btn-import label {
+    position: absolute;
+    width: 32px;
+    height: 30px;
+}
+
+.btn-import input {
+    display: none;
+}

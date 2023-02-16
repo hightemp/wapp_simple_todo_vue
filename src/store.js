@@ -3,7 +3,7 @@ import { createStore } from 'vuex'
 import demo_data from './demo_data'
 import { FileSystemDriver } from './FileSystemDriver'
 
-import { fnRandomString } from './lib'
+import { fnRandomString, fnSaveFile } from './lib'
 
 // NOTE: Константы
 export const DATABASE_PATH = "tasks-database.json"
@@ -101,6 +101,9 @@ export default createStore({
 
         fnUpdateDatabase(state, oDatabase) {
             state.oDatabase = oDatabase
+        },
+        fnUpdateRepos(state, aReposList) {
+            state.aReposList = aReposList
         },
 
         fnHideRepoWindow(state) {
@@ -248,7 +251,21 @@ export default createStore({
         fnRemoveTask(state, sID) {
             var iI = state.oDatabase.tasks.findIndex((oI) => oI.id == sID)
             state.oDatabase.tasks.splice(iI, 1)
-        }
+        },
+
+        fnExportDatabase({ commit, state, dispatch, getters }) {
+            fnSaveFile('tasks-database', JSON.stringify(state.oDatabase, null, 4))
+        },
+        fnImportDatabase({ commit, state, dispatch, getters }, sData) {
+            commit('fnUpdateDatabase', JSON.parse(sData))
+        },
+
+        fnExportRepos({ commit, state, dispatch, getters }) {
+            fnSaveFile('tasks-repos', JSON.stringify(state.aReposList, null, 4))
+        },
+        fnImportRepos({ commit, state, dispatch, getters }, sData) {
+            commit('fnUpdateRepos', JSON.parse(sData))
+        },
     },
     actions: {
         fnPrepareRepo({ commit, state, dispatch, getters }) {
@@ -269,7 +286,8 @@ export default createStore({
             commit('fnShowLoader')
             FileSystemDriver
                 .fnReadFileJSON(DATABASE_PATH)
-                .then((mData) => { 
+                .then((mData) => {
+                    if (!mData) throw "Cannot destructure property"
                     commit('fnUpdateDatabase', mData)
                     // commit('fnUpdateDatabase', mData=demo_database)
                     commit('fnHideLoader')
