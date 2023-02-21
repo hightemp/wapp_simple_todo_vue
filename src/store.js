@@ -253,6 +253,8 @@ export default createStore({
             state.oDatabase.tasks.splice(iI, 1)
         },
 
+    },
+    actions: {
         fnExportDatabase({ commit, state, dispatch, getters }) {
             fnSaveFile('tasks-database', JSON.stringify(state.oDatabase, null, 4))
         },
@@ -266,8 +268,7 @@ export default createStore({
         fnImportRepos({ commit, state, dispatch, getters }, sData) {
             commit('fnUpdateRepos', JSON.parse(sData))
         },
-    },
-    actions: {
+        
         fnPrepareRepo({ commit, state, dispatch, getters }) {
             commit('fnHideRepoWindow')
             FileSystemDriver.fnInit(getters.oCurrentRepo)

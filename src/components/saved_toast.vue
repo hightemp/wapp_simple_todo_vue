@@ -1,7 +1,7 @@
 <template>
 <div class="toast-container position-fixed top-0 end-0 p-3">
     <div
-        v-show="bShowSaveToast" 
+        v-if="bShowSaveToast" 
         class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true"
     >
         <div class="toast-header">
